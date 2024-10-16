@@ -1,38 +1,35 @@
 # commandkit
-easy tool to parse string to commands, easy tool to create commandlines
 
-# installation
+easy tool to parse string to commands and an easy tool to create commandlines
 
-Run the following to install:
+# nin0lib
+
+create nin0chat bots with python!
+
+## install
+
 ```cmd
-pip install commandkit
-```
-### or
-```cmd
-python -m pip install commandkit
-```
-if that didn't work, try replacing `pip` with `pip3`.
-
-
-need help? or have bugs to report, let me know in [here](https://discord.gg/vzEZnC7CM8)
-
-## simple example
-```python
-from commandkit.commander import CommandLine
-cmder = CommandLine() # class
-
-@cmder.command(name="foo") # if name is None take function name
-def foo(cmd, num):
-  # do stuff with the cmd and num
-  ...
-
-@cmder.command(description="Calculator f(num) = num * 5")
-def bar(num:int):
-  return num*5
-
-cmder.process_command("foo kick 10")
+pip install .
 ```
 
-# docs
+## example
 
-**Soon**
+```py
+from nin0lib.bot import Bot, Context
+from secret import secret_key
+
+bot = Bot(prefix="c.",username="coolBot")
+
+@bot.command(aliases=["hi", "hello", "hola"])
+async def hello(ctx: Context):
+    await ctx.send("Hello, I'm coolBot!")
+
+@bot.command()
+async def sum(ctx: Context, n1: int, n2: int):
+    await ctx.send(f"The sum of {n1} and {n2} is {n1+n2}")
+
+bot.run(secret_key)
+```
+
+> [!NOTE]
+> replace secret_key with your key!
