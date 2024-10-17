@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 import asyncio
 
+from .roles import Roles
 from .message import Message
 from .client import Client
 
@@ -36,7 +37,7 @@ class CommandsManager(Commander):
 			command,name = self._process_command(string)
 		except PrefixError:
 			return
-		args = kw.get('lex',self.get_command_args)(string[len(name):])
+		args = kw.get('lex',self.get_command_args)(string)
 		print("Args", context, args)
 		return await command(context, *args)
 
@@ -63,11 +64,11 @@ class Bot(Client, CommandsManager):
 
 @dataclass
 class Context:
-    role: int
+    role: str
     content: str
     username: str
     send: Bot.send
 
 
 def create_context(bot: Bot, message: Message):
-    return Context(role=message.role, content=message.content, username=message.username, send=bot.send)
+    return Context(role=Roles(message.role).name, content=message.content, username=message.username, send=bot.send)
