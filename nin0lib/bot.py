@@ -9,21 +9,35 @@ import asyncio
 from .message import Message
 from .client import Client
 
-
 class BotCommand(Command):
 	def parse_annotation(s,*_args,**_kw):
 		sign = signature(s.function)
 		params = list(sign.parameters.values())[1::]
-		return _parse_annotation(params,*_args,**_kw)
+		index, param = next(((i,param) for i, param in enumerate(params) if param.kind == param.KEYWORD_ONLY), (-1, None))
+		if index != -1 and param.annotation == str:
+			_kw[param.name] = ' '.join(_args[index::])
+			_args = _args[:index]
+		return  _parse_annotation(params, *_args, **_kw)
+
+	def __call__(self, context, *_args,**_kw):
+		""" call self.function """
+		args,kw = self._parse(*_args,**_kw)
+		return self.function(context, *args,**kw)
+
+	async def __await__(self, context, *_args,**_kw):
+		""" await self.function """
+		args,kw = self._parse(*_args,**_kw)
+		return await self.function(context, *args,**kw)
 
 class CommandsManager(Commander):
 	default_command_object = BotCommand
 	async def process_command(self, context: "Context", string: str, **kw):
 		try:
-			command,_ = self._process_command(string)
+			command,name = self._process_command(string)
 		except PrefixError:
 			return
-		args = kw.get('lex',self.get_command_args)(string)
+		args = kw.get('lex',self.get_command_args)(string[len(name):])
+		print("Args", context, args)
 		return await command(context, *args)
 
 class Bot(Client, CommandsManager):
