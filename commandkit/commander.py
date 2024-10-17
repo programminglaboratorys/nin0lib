@@ -20,15 +20,23 @@ class CommandNotFoundError(CommandError):
 class BasicCommand(object):
 	function: Callable | asyncio.coroutine
 	description: str | None
-	data: dict
+	extra: dict
 	name: str | None
+
+	__slots__ = (
+		'function',
+		'description',
+		'extra',
+		'name',
+	)
+
 	_command = lambda s,*args,**kw: type(s).command(*args,**kw)
-	def __init__(self, function, description=None, name=None, **data):
+	def __init__(self, function, description=None, name=None, **extra):
 		super(BasicCommand, self).__init__()
 		self.function = function
 		self.description = description
-		self.data  = data
 		self.name = name
+		self.extra  = extra
 
 	def command(*args, **kw):
 		def inner(func):
@@ -71,11 +79,11 @@ class BasicCommands(object):
 	def __init__(self):
 		self.commands  =  {}
 
-	def add_command(self, function: Callable, name:str=None, description:str=None, data:dict={}, **kw):
+	def add_command(self, function: Callable, name:str=None, description:str=None, **kw):
 		""" add a new command """
 		name = name if name is not None else function.__name__
 		command_object = kw.get("Command",self.default_command_object)\
-								(function, description, name, **data)  if not isinstance(function,BasicCommand) \
+								(function, description, name, **kw)  if not isinstance(function,BasicCommand) \
 																	else function
 		for ali in kw.get("aliases",[name]):
 			self.commands[ali] = command_object
@@ -105,9 +113,9 @@ class BasicCommands(object):
 		return self.get_command(name)(*args, **kw)
 
 	def command(self,*args,**kw):
-		def wrapper(function):
+		def inner(function):
 			return self.add_command(function, *args, **kw)
-		return wrapper
+		return inner
 
 	def __call__(self,name: Callable | str, *args, **kw):
 		""" call command(s) """
@@ -124,7 +132,7 @@ class BasicCommands(object):
 class Command(BasicCommand):
 	parse_annotation = lambda s,*a,**k: parse_annotation(s.function,*a,**k)
 	def command(*args, **kw):
-		""" create a command object if inner is called """
+		""" returns a inner that returns a command object """
 		def inner(func):
 			""" return command object when called """
 			return Command(func,*args,**kw)
