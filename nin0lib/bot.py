@@ -15,7 +15,7 @@ class BotCommand(Command):
 		sign = signature(s.function)
 		params = list(sign.parameters.values())[1::]
 		index, param = next(((i,param) for i, param in enumerate(params) if param.kind == param.KEYWORD_ONLY), (-1, None))
-		if index != -1 and param.annotation == str:
+		if index != -1 and (param.annotation == str or param.annotation == param.empty):
 			_kw[param.name] = ' '.join(_args[index::])
 			_args = _args[:index]
 		return  _parse_annotation(params, *_args, **_kw)

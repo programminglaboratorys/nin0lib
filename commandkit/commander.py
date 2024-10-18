@@ -6,10 +6,10 @@ import asyncio
 
 class BadArgument(CommandError):
 	""" when a parsing error on an argument to pass into a command """
-	def __init__(self, message, parameters, command_object):
+	def __init__(self, message, parameters, command):
 		super(BadArgument, self).__init__(message)
 		self.parameters     = parameters
-		self.command_object = command_object
+		self.command = command
 
 class CommandNotFoundError(CommandError):
 	""" when command doesn't exist """
@@ -26,8 +26,8 @@ class BasicCommand(object):
 	__slots__ = (
 		'function',
 		'description',
-		'extra',
 		'name',
+		'extra',
 	)
 
 	_command = lambda s,*args,**kw: type(s).command(*args,**kw)
@@ -113,7 +113,7 @@ class BasicCommands(object):
 		return self.get_command(name)(*args, **kw)
 
 	def command(self,*args,**kw):
-		def inner(function):
+		def inner(function) -> BasicCommand|Command:
 			return self.add_command(function, *args, **kw)
 		return inner
 
@@ -159,7 +159,7 @@ class Commands(BasicCommands):
 	default_command_object = Command
 
 class Commander(Commands, CommandParser):
-	def __init__(self, prefix:str):
+	def __init__(self, prefix: str):
 		super(Commander,self).__init__()
 		self.prefix = prefix
 

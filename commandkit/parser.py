@@ -78,8 +78,8 @@ def _parse_annotation(params, *_args, **_kw):
 	if not list(params): # if params is empty
 		return _args,_kw
 	args = []
-	kw = {} | _kw
-	for index,param in enumerate(params):
+	kw = _kw.copy()
+	for index, param in enumerate(params):
 		try:
 			item = _args[index]
 		except IndexError:
