@@ -2,9 +2,9 @@ from enum import Enum
 
 
 class Roles(Enum):
-    none = 0
     system = -1
-    bot = 12
-    discord = 3
+    none = 0
     admin = 2
+    discord = 3
+    bot = 12
 
