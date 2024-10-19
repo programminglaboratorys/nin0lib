@@ -1,6 +1,7 @@
 from json import dumps as tojson, loads as fromjson
 from typing import AsyncIterable
 from websockets.client import connect, WebSocketClientProtocol
+import websockets
 
 import asyncio
 
@@ -28,17 +29,28 @@ class Client:
             return fromjson(message)
     
     async def _run(self):
-        async with connect(self.uri) as websocket:
-            self.socket = websocket
-            async for message in self.socket:
-                data: dict = fromjson(message)
-                if data.get("op") != None:
-                    for message in data["messages"]:
-                        message: dict
-                        message["username"] = message.pop("user")
-                    await self.on_previous_messages(data["op"], list(map(lambda m: Message(**m), data["messages"])))
-                    continue
-                await self.on_message(Message(**data))
+        limit = 0
+        while (limit := limit + 1) < 10:
+            try:
+                async with connect(self.uri) as websocket:
+                    limit = 0
+                    self.socket = websocket
+                    async for message in self.socket:
+                        data: dict = fromjson(message)
+                        if data.get("op") != None:
+                            for message in data["messages"]:
+                                message: dict
+                                message["username"] = message.pop("user")
+                            await self.on_previous_messages(data["op"], list(map(lambda m: Message(**m), data["messages"])))
+                            continue
+                        await self.on_message(Message(**data))
+            except (websockets.exceptions.ConnectionClosedError) as e:
+                print(f"Connection closed {e}. Retrying...")
+                await asyncio.sleep(1)
+            except Exception as e:
+                print(f"An error happened {e}. Retrying...")
+                await asyncio.sleep(1)
+        print("reached retry limit")
     
     def run(self, key: str):
         self.key = key
