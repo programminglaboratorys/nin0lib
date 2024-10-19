@@ -11,8 +11,8 @@ from .message import Message
 from .client import Client
 
 class BotCommand(Command):
-	def parse_annotation(s,*_args,**_kw):
-		sign = signature(s.function)
+	def parse_annotation(self, *_args, **_kw):
+		sign = signature(self.function)
 		params = list(sign.parameters.values())[1::]
 		index, param = next(((i,param) for i, param in enumerate(params) if param.kind == param.KEYWORD_ONLY), (-1, None))
 		if index != -1 and (param.annotation == str or param.annotation == param.empty):
@@ -49,10 +49,10 @@ class Bot(Client, CommandsManager):
             async def default_help(context):
                 showed = set()
                 commands_list = "```commands:\n"
-                for command in self.commands.values():
+                for name, command in self.commands.items():
                     if command in showed:
                         continue
-                    commands_list += f"\t- {command.name}" +  (f" | {command.description}\n" if command.description and command.description.strip() else "\n")
+                    commands_list += f"\t- {name}" +  (f" | {command.description}\n" if command.description and command.description.strip() else "\n")
                     showed.add(command)
                 commands_list += "```"
                 await context.send(commands_list)
