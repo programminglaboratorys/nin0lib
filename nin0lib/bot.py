@@ -1,45 +1,33 @@
-from commandkit import Commander, PrefixError, Command
-from commandkit.parser import _parse_annotation
-from inspect import signature
-
-from dataclasses import dataclass
+from commandkit import Commander, BasicCommand
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
 import asyncio
 
 from .roles import Roles
 from .message import Message
 from .client import Client
+from .view import StringView
 
-class BotCommand(Command):
-	def parse_annotation(self, *_args, **_kw):
-		sign = signature(self.function)
-		params = list(sign.parameters.values())[1::]
-		index, param = next(((i,param) for i, param in enumerate(params) if param.kind == param.KEYWORD_ONLY), (-1, None))
-		if index != -1 and (param.annotation == str or param.annotation == param.empty):
-			_kw[param.name] = ' '.join(_args[index::])
-			_args = _args[:index]
-		return  _parse_annotation(params, *_args, **_kw)
-
-	def __call__(self, context, *_args,**_kw):
-		""" call self.function """
-		args,kw = self._parse(*_args,**_kw)
-		return self.function(context, *args,**kw)
-
-	async def __await__(self, context, *_args,**_kw):
-		""" await self.function """
-		args,kw = self._parse(*_args,**_kw)
-		return await self.function(context, *args,**kw)
+class BotCommand(BasicCommand):
+	pass
 
 class CommandsManager(Commander):
 	default_command_object = BotCommand
+
+
 	async def process_command(self, context: "Context", string: str, **kw):
-		try:
-			command,name = self._process_command(string)
-		except PrefixError:
+		""" processing string to a command """
+		view = StringView(string)
+		if not view.skip_string(self.prefix):
 			return
-		args = kw.get('lex',self.get_command_args)(string)
-		print("Args", context, args)
-		return await command(context, *args)
+		name = view.get_word()
+		if not name:
+			return
+		command: BotCommand = self.get_command(name)
+		args, kw = parse_arguments(command.function, view)
+		context.set_arguments(args, kw)
+		return await command(context, *args, **kw)
 
 class Bot(Client, CommandsManager):
     def __init__(self, *, prefix, **kw):
@@ -64,11 +52,53 @@ class Bot(Client, CommandsManager):
 
 @dataclass
 class Context:
-    role: str
-    content: str
-    username: str
-    send: Bot.send
+	role: str
+	content: str
+	username: str
+	send: Bot.send
+	args: List[str] = field(default_factory=list)
+	kwargs: Dict[str, Any] = field(default_factory=dict)
+
+	def set_arguments(self, args: list, kwargs: dict):
+		self.args = args
+		self.kwargs = kwargs
+
+	def __repr__(self) -> str:
+		return f"{self.__class__.__name__}(role={repr(Roles(self.role).name)}, content={self.content}, username={self.username})"
 
 
 def create_context(bot: Bot, message: Message):
-    return Context(role=Roles(message.role).name, content=message.content, username=message.username, send=bot.send)
+	return Context(role=Roles(message.role).name, content=message.content, username=message.username, send=bot.send)
+
+
+from inspect import _POSITIONAL_ONLY,\
+				_POSITIONAL_OR_KEYWORD, _KEYWORD_ONLY, _VAR_POSITIONAL, signature, Parameter
+
+
+def run_converter(param: Parameter, value):
+	if param.annotation is not param.empty:
+		return param.annotation(value)
+	return value
+
+def parse_arguments(function, view: StringView):
+	args = []
+	kwargs = {}
+	sign = signature(function)
+	params = list(sign.parameters.values())[1::] # skip context object
+	if not list(params): # if params is empty
+		return args, kwargs
+	for param in params:
+		if param.kind in (_POSITIONAL_ONLY, _POSITIONAL_OR_KEYWORD):
+			view.skip_ws()
+			args.append(run_converter(param, view.get_word()))
+		elif param.kind == _KEYWORD_ONLY:
+			view.skip_ws()
+			kwargs[param.name] = run_converter(param, view.read_rest())
+		elif param.kind == _VAR_POSITIONAL:
+			while not view.eof:
+				if not view.skip_ws(): # if no white space was skipped
+					break
+				args.append(run_converter(param, view.get_word()))
+		else:
+			raise NotImplementedError("Unknown kind type {} for parameter {}. ({})".format(param.kind, param.name, function))
+	return args, kwargs
