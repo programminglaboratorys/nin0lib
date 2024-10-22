@@ -31,10 +31,10 @@ class CommandsManager(Commander):
 		return await command(context, *args, **kw)
 
 class Bot(Client, CommandsManager):
-    def __init__(self, *, prefix, **kw):
-        Client.__init__(self, **kw)
+    def __init__(self, *, prefix: str, default_help_command = None, **kwargs):
+        Client.__init__(self, **kwargs)
         CommandsManager.__init__(self, prefix=prefix)
-        if kw.get("default_help_command") == None:
+        if default_help_command == None:
             async def default_help(context):
                 showed = set()
                 commands_list = "```commands:\n"
@@ -49,7 +49,7 @@ class Bot(Client, CommandsManager):
         return
 
     async def on_message(self, message: Message):
-        if Roles.BOT in message.author.roles:
+        if message.author.bot:
             return
         asyncio.create_task(self.process_command(Context.create_context(self, message), message.content))
 

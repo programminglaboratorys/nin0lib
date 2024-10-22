@@ -112,18 +112,18 @@ class BasicCommands(object):
 		""" call command(s) """
 		return self.get_command(name)(*args, **kw)
 
-	def command(self,*args,**kw):
+	def command(self, *args, **kw):
 		def inner(function) -> BasicCommand|Command:
 			return self.add_command(function, *args, **kw)
 		return inner
 
-	def __call__(self,name: Callable | str, *args, **kw):
+	def __call__(self, name: Callable | str, *args, **kw):
 		""" call command(s) """
-		return self.call_command(name,*args,**kw)
+		return self.call_command(name, *args, **kw)
 
-	async def __await__(self,name: Callable | str,*args,**kw):
+	async def __await__(self, name: Callable | str,*args,**kw):
 		""" await command(s) """
-		return await self.function(*args,**kw)
+		return await self.get_command(name)(*args, **kw)
 
 	def __repr__(self):
 		return f"{type(self).__name__}({list(self.commands.keys())})"

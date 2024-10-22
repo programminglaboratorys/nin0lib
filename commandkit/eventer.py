@@ -13,7 +13,11 @@ class Eventer(object):
 		return event(*args, **kwargs)
 
 	def add_listen(self, func: Callable, name: str=None):
-		return self.listen(name=name)(func)
+		name = func.__name__ if name is None else name
+		if name in self.extra_events:
+			self.extra_events[name].append(func)
+		else:
+			self.extra_events[name] = [func]
 
 	def remove_listen(self, func: Callable, name: str=None):
 		name = func.__name__ if name is None else name
@@ -23,17 +27,7 @@ class Eventer(object):
 			except ValueError:
 				pass
 
-	def listen(self, *args, **kw):
-		def inner(func):
-			name = kw.get("name",None)
-			name = func.__name__ if name is None else name
-			if name in self.extra_events:
-				self.extra_events[name].append(func)
-			else:
-				self.extra_events[name] = [func]
-		return inner
-
-	def event(self,func: Callable):
-		return self.listen()(func)
+	def event(self, func: Callable):
+		return self.add_listen(func)
 
 

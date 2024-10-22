@@ -16,7 +16,7 @@ class Context(Message):
 		self.kwargs = kwargs
 
 	@classmethod
-	def from_dict(cls, data: dict):
+	def from_dict(cls, data: Dict[str, Any]):
 		data = data.copy()
 		data["author"] = data["userInfo"] if isinstance(data["userInfo"], User) else User(**data["userInfo"]) 
 		del data["userInfo"]

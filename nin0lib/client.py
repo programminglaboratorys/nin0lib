@@ -41,7 +41,7 @@ class Client(EventManager):
     uri: str = "wss://chatws.nin0.dev/"
     _logger: logging.Logger = logger
 
-    def __init__(self, *, token=None) -> None:
+    def __init__(self, *, token=None, **_) -> None:
         EventManager.__init__(self)
         self.socket = None
         self.token = token
@@ -122,7 +122,9 @@ class Client(EventManager):
         return self
     
     def __exit__(self, *args):
-        raise RuntimeError("Client must be used with asyncio.run() or as an async context manager")
+        if not asyncio.get_event_loop().is_running():
+            raise RuntimeError("Client must be used with asyncio.run() or as an async context manager")
+        return self
 
     async def on_raw_login(self, raw):
         self.__dict__.update(raw)
