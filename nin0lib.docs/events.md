@@ -1,5 +1,3 @@
-Based on the code snippet you provided, here are the events that can be used with the `@bot.event` decorator:
-
 ### `on_socket_error`
 
 Triggered when an error is received from the socket.
