@@ -8,7 +8,7 @@ from logging import getLogger
 import asyncio
 import logging
 
-from .message import Message
+from .message import Message, User
 from .opcodes import Opcodes, Packet
 
 logger = getLogger(__name__)
@@ -138,6 +138,8 @@ class Client(EventManager):
         match packet.op:
             case Opcodes.ERROR:
                   self.dispatch("socket_" + packet.op.name.lower(), packet.d)
+            case Opcodes.MEMBER_LIST:
+                self.dispatch(packet.op.name.lower(), map(User, packet.d["users"]))
             case Opcodes.MESSAGE:
                 self.dispatch(packet.op.name.lower(), Message.from_dict(packet.d))
             case _:

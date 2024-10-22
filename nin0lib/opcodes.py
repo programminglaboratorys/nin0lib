@@ -7,6 +7,7 @@ class Opcodes(IntEnum):
     LOGIN = 1
     HEARTBEAT = 2
     MESSAGE_HISTORY = 3
+    MEMBER_LIST = 4
     ERROR = -1
 
 @dataclass

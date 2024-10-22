@@ -6,6 +6,10 @@ Triggered when an error is received from the socket.
 
 Triggered when a chat message is received.
 
+### `on_member_list(users: Iterator[User])`
+
+Triggered when a member list is received or updated.
+
 ### `on_raw_socket_message(message: str)`
 
 Triggered when a raw message is received from the socket.

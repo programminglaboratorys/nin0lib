@@ -96,7 +96,7 @@ class BasicCommands(object):
 			del self.commands[name]
 		return
 
-	def command_exist(self,name: str):
+	def command_exist(self, name: str):
 		""" name(s) in commands """
 		return name in self.commands
 
