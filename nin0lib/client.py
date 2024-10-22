@@ -56,7 +56,7 @@ class Client(EventManager):
     async def receive(self) -> AsyncIterable[Packet]:
         async for message in self.socket:
             return Packet.from_json(message)
-    
+
     async def _run(self):
         limit = 0
         while (limit := limit + 1) < 10:
@@ -71,12 +71,12 @@ class Client(EventManager):
                     ).to_json())
                     async for message in self.socket:
                         self.dispatch("raw_socket_message", message)
-            except (ConnectionClosedOK, ConnectionClosed, KeyboardInterrupt) as e:
+            except (ConnectionClosedOK, KeyboardInterrupt) as e:
                 self.dispatch("disconnect")
                 logger.info(f"Connection closed: {e}")
                 return
-            except (ConnectionClosedError) as e:
-                logger.info(f"Connection closed error {repr(e)}. Retrying...")
+            except (ConnectionClosedError, ConnectionClosed) as e:
+                logger.info(f"Connection closed {repr(e)}. Retrying...")
                 await asyncio.sleep(1)
             except Exception as e:
                 logger.info(f"An error happened {repr(e)}. Retrying...")
