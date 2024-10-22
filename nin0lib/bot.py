@@ -1,13 +1,13 @@
 from commandkit import Commander, BasicCommand
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
 
 import asyncio
 
-from .roles import Roles
+
 from .message import Message
 from .client import Client
 from .view import StringView
+from .context import Context
+from .roles import Roles
 
 class BotCommand(BasicCommand):
 	pass
@@ -27,6 +27,7 @@ class CommandsManager(Commander):
 		command: BotCommand = self.get_command(name)
 		args, kw = parse_arguments(command.function, view)
 		context.set_arguments(args, kw)
+		context.command = name
 		return await command(context, *args, **kw)
 
 class Bot(Client, CommandsManager):
@@ -46,29 +47,11 @@ class Bot(Client, CommandsManager):
                 await context.send(commands_list)
             self.add_command(default_help, "help", "shows this help message")
         return
+
     async def on_message(self, message: Message):
-        asyncio.create_task(self.process_command(create_context(self, message), message.content))
-    
-
-@dataclass
-class Context:
-	role: str
-	content: str
-	username: str
-	send: Bot.send
-	args: List[str] = field(default_factory=list)
-	kwargs: Dict[str, Any] = field(default_factory=dict)
-
-	def set_arguments(self, args: list, kwargs: dict):
-		self.args = args
-		self.kwargs = kwargs
-
-	def __repr__(self) -> str:
-		return f"{self.__class__.__name__}(role={repr(Roles(self.role).name)}, content={self.content}, username={self.username})"
-
-
-def create_context(bot: Bot, message: Message):
-	return Context(role=Roles(message.role).name, content=message.content, username=message.username, send=bot.send)
+        if Roles.BOT in message.author.roles:
+            return
+        asyncio.create_task(self.process_command(Context.create_context(self, message), message.content))
 
 
 from inspect import _POSITIONAL_ONLY,\

@@ -1,6 +1,7 @@
 from .roles import Roles
-from .message import Message
+from .message import Message, User
 from .client import Client
-from .bot import Bot
+from .opcodes import Opcodes, Packet
+from .bot import Bot, Context
 
-__all__ = ["Roles", "Message", "Client", "Bot", ]
+__all__ = ["Roles", "Message", "User", "Client", "Bot", "Opcodes", "Context", "Packet"]

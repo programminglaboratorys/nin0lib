@@ -1,10 +1,12 @@
 from enum import Enum
 
-
 class Roles(Enum):
-    system = -1
-    none = 0
-    admin = 2
-    discord = 3
-    bot = 12
+    GUEST = 1 << 0
+    USER = 1 << 1
+    BOT = 1 << 2
+    SYSTEM = 1 << 3
+    MOD = 1 << 4
+    ADMIN = 1 << 5
 
+def get_roles_from_int(value):
+    return [role for role in Roles if value & role.value]

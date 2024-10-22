@@ -1,18 +1,38 @@
-from nin0lib.bot import Bot, Context, create_context
-from nin0lib import Roles, Message
-from secret import secret_key
+from nin0lib.bot import Bot
+from nin0lib import Message, Context
+from secret import token
 
+import asyncio
 import aiohttp
 import base64
 import re
 
 
-bot = Bot(prefix="i.",username="iambot")
+class Bot(Bot):
+    async def on_message(self, message: Message):
+        content = message.content
+
+        if message.author.id == "000665514498199552":
+            match = re.match(r"[a-z0-9_\.]+ ~ (.*)", content)
+            if match is not None:
+                content = match[1]
+        asyncio.create_task(self.process_command(Context.create_context(self, message), content))
+
+bot = Bot(prefix="i.")
+
+@bot.event
+async def on_ready():
+    print("logged in as", bot.username)
+
+@bot.event
+async def on_raw_socket_message(message):
+    return
+    print(message)
 
 @bot.command(aliases=["hi", "hello", "hola"])
 async def hello(ctx: Context, name: str = None):
     if name == None:
-        await ctx.send(f"Hello, {ctx.username}!")
+        await ctx.send(f"Hello, {ctx.author.username}!")
         return
     await ctx.send(f"Hello, I'm {bot.username}!")
 
@@ -87,14 +107,13 @@ async def special_eval(ctx, code):
         ]
     }
 
-
     async with aiohttp.ClientSession() as session:
         async with session.post("http://localhost:8060/eval", json=rq) as resp:
             data = await resp.json()
-            print("eval job by ", ctx.username, "executing code:", data)
-            message = find_crosspending_emoji(code, data["returncode"]) + f" Your 3.12 eval job has completed with return code {data['returncode']}."
+            print("eval job by ", ctx.author.username, "executing code:", data)
+            message = find_crosspending_emoji(code, data["returncode"]) + f" Your 3.12 eval job has completed with return code {data['returncode']}.\n"
             message += "```"
-            message += data["stdout"] if data["stdout"] else "[No output]"
+            message += (data["stdout"] if data["stdout"] else "[No output]") + ""
             message += "```"
             await ctx.send(message)
 
@@ -116,4 +135,14 @@ async def _eval(ctx, *, code: str):
     await special_eval(ctx, code)
 
 
-bot.run(secret_key)
+@bot.event
+async def on_message(message):
+    print(message)    
+
+import logging
+
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+bot._logger.addHandler(handler)
+# 000665514498199552
+bot.run(token)#, logger_level=logging.DEBUG)

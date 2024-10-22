@@ -1,7 +1,7 @@
 from typing import Callable, Any
 
 class Eventer(object):
-	def __init__(self,events={}):
+	def __init__(self, events={}):
 		self.extra_events: dict[str, list[Callable]] = events
 
 	def dispatch(self, event_name: str, /, *args, **kwargs):
@@ -16,12 +16,12 @@ class Eventer(object):
 		return self.listen(name=name)(func)
 
 	def remove_listen(self, func: Callable, name: str=None):
-			name = func.__name__ if name is None else name
-			if name in self.extra_events:
-				try:
-					self.extra_events[name].remove(func)
-				except ValueError:
-					pass
+		name = func.__name__ if name is None else name
+		if name in self.extra_events:
+			try:
+				self.extra_events[name].remove(func)
+			except ValueError:
+				pass
 
 	def listen(self, *args, **kw):
 		def inner(func):
