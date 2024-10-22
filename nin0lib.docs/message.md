@@ -1,7 +1,5 @@
 # Message
 
-================
-
 The [`Message`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/message.py#L26) is a dataclass; class represents a message sent by a user in a chat.
 
 ## Fields
@@ -33,8 +31,6 @@ The device type that sent the message, or `None` if it's the system.
 Creates a new `Message` object from a dictionary.
 
 # User
-
-================
 
 The [`User`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/message.py#L6) is a dataclass; class represents a user in chat.
 
