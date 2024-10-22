@@ -12,7 +12,7 @@ The `Context` class inherits from [`Message`](https://github.com/programminglabo
 
 A function that sends a message to the chat.
 
-### [command](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/bot.py#L30): `str`
+### [`command`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/bot.py#L30): `str`
 
 The command that was executed.
 
