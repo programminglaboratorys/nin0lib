@@ -24,6 +24,10 @@ The unique ID of the message.
 
 The device type that sent the message, or `None` if it's the system.
 
+### `type`: `int`
+
+Unknown
+
 ## Methods
 
 ### `from_dict(cls, data: dict)`
@@ -47,6 +51,10 @@ The roles that the user has. type [`Roles`](https://github.com/programminglabora
 ### `id`: `int`
 
 The unique ID of the user.
+
+### `bridgeMetadata`: `dict`
+
+Unkown
 
 ### property `bot` -> bool
 
