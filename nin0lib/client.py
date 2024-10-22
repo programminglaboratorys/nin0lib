@@ -41,10 +41,11 @@ class Client(EventManager):
     uri: str = "wss://chatws.nin0.dev/"
     _logger: logging.Logger = logger
 
-    def __init__(self, *, token=None, **_) -> None:
+    def __init__(self, *, token=None, uri=None, **_) -> None:
         EventManager.__init__(self)
         self.socket = None
         self.token = token
+        self.uri = uri = "wss://chatws.nin0.dev/" if uri is None else uri
 
     async def send(self, message):
         await self.raw_send(Packet(op=Opcodes.MESSAGE, d={"content": str(message)}).to_json())
