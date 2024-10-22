@@ -1,6 +1,6 @@
 # Client
 
-The [`Client`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/client.py#L36) class represents a client that can connect to a chat server.
+The [`Client`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/client.py#L36) class represents a client that can connect to the server.
 
 ## Inheritance
 

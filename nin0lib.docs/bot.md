@@ -1,6 +1,6 @@
 # Bot
 
-The [Bot](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/bot.py#L33) class represents a bot that can connect to a chat server.
+The [Bot](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/bot.py#L33) class represents a bot that can connect to the server.
 
 ## Inheritance
 

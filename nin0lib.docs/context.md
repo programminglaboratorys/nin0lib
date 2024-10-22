@@ -8,7 +8,7 @@ The `Context` class inherits from [`Message`](https://github.com/programminglabo
 
 ## Fields
 
-### `send`: [`Client.send`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/client.py#L49)
+### `send`: [`Client.send`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib.docs/client.md#sendself-message-str)
 
 A function that sends a message to the chat.
 
