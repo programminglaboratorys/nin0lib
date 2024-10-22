@@ -30,7 +30,7 @@ The URI of the chat websocket server.
 
 ## Methods
 
-### `__init__(self, *, token: str = None)`
+### `__init__(self, *, token: str = None, uri=None)`
 
 Initializes the client object.
 
