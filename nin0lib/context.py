@@ -6,7 +6,7 @@ from .bot import Client
 
 @dataclass
 class Context(Message):
-	send: Client.send
+	send: Client.send = field(init=True, default=Client.send)
 	command: str = field(default_factory=str)
 	args: List[str] = field(default_factory=list)
 	kwargs: Dict[str, Any] = field(default_factory=dict)

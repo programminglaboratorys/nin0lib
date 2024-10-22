@@ -29,8 +29,8 @@ class Message:
 	timestamp: int
 	content: str
 	id: int
-	device: Literal["web", "mobile", "bot"] = field(default_factory=str) # doesn't exist for system
 	type: int
+	device: Literal["web", "mobile", "bot"] = field(default_factory=str) # doesn't exist for system
 
 	def __post_init__(self):
 		self.author = User(**self.author) if isinstance(self.author, dict) else self.author
