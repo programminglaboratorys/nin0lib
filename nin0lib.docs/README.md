@@ -6,7 +6,7 @@ Welcome to the nin0lib documentation!
 
 - [Gateway Documentation](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib.docs/events.md): Learn about the different events that are dispatched and gateway and how to use it.
 - [Bot Documentation](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib.docs/bot.md): Learn about the Bot module and how to use it to create your own bots.
-- [Client Documentation](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib.docs/client.md): Learn about the Client library and how to use it to connect to the Gateway.
+- [Client Documentation](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib.docs/client.md): Learn about the Client module and how to use it to connect to the Gateway.
 
 - [Opcodes Documentation](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib.docs/opcodes.md): Learn about the different opcodes used by the Nin0 Gateway.
 
