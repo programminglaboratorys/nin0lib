@@ -7,6 +7,7 @@ class User:
 	username: str
 	roles: list[Roles]
 	id: int
+	bridgeMetadata: dict
 
 	def __post_init__(self):
 		if not isinstance(self.roles, (int, list)):
@@ -29,6 +30,7 @@ class Message:
 	content: str
 	id: int
 	device: Literal["web", "mobile", "bot"]|None
+	type: int
 
 	def __post_init__(self):
 		self.author = User(**self.author) if isinstance(self.author, dict) else self.author
