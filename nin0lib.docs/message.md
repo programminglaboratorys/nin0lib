@@ -42,7 +42,7 @@ The username of the user.
 
 ### roles: `list[Roles]`
 
-The roles that the user has. type [`Roles`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib/roles.py#L3)
+The roles that the user has. type [`Roles`](https://github.com/programminglaboratorys/nin0lib/blob/main/nin0lib.docs/roles.md#roles)
 
 ### `id`: `int`
 
