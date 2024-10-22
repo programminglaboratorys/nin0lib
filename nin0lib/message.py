@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 from .roles import Roles, get_roles_from_int
 
@@ -7,7 +7,7 @@ class User:
 	username: str
 	roles: list[Roles]
 	id: int
-	bridgeMetadata: dict
+	bridgeMetadata: dict = field(default_factory=dict) # doesn't exists for system
 
 	def __post_init__(self):
 		if not isinstance(self.roles, (int, list)):
@@ -29,7 +29,7 @@ class Message:
 	timestamp: int
 	content: str
 	id: int
-	device: Literal["web", "mobile", "bot"]|None
+	device: Literal["web", "mobile", "bot"] = field(default_factory=str) # doesn't exist for system
 	type: int
 
 	def __post_init__(self):
