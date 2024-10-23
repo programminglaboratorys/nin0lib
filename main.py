@@ -24,11 +24,6 @@ bot = Bot(prefix="i.")
 async def on_ready():
     print("logged in as", bot.username)
 
-@bot.event
-async def on_raw_socket_message(message):
-    return
-    print(message)
-
 @bot.command(aliases=["hi", "hello", "hola"])
 async def hello(ctx: Context, name: str = None):
     if name == None:
@@ -119,7 +114,7 @@ async def special_eval(ctx, code):
 
 @bot.command(name="eval")
 async def _eval(ctx, *, code: str):
-    code = code.strip("\n").strip("`")
+    code = code.strip("`")
     if (match:=re.match("py(thon)?\n", code)) is not None:
         code = code[match.span(0)[1]:]
         #code = "\n".join(code.split("\n")[1:])
